@@ -262,6 +262,7 @@ Please provide your analysis in a clear, structured format, using appropriate st
   const [selectedAnalysisOptions, setSelectedAnalysisOptions] = useState<string[]>([]);
   const [showPanelsOptions, setShowPanelsOptions] = useState<{ label: string; value: string }[]>([]);
   const [selectedPanel, setSelectedPanel] = useState<string | null>(null);
+  const [defaultDataSource, setDefaultDataSource] = useState<any>(null);
   const [templateVars, setTemplateVars] = useState({
     datasource: '',
     job: '',
@@ -300,6 +301,21 @@ Please provide your analysis in a clear, structured format, using appropriate st
   const contentStyle = {
     display: isExpanded ? 'block' : 'none',
   };
+
+  useEffect(() => {
+    const fetchDefaultDataSource = async () => {
+      try {
+        const ds = await getDataSourceSrv().get();
+        setDefaultDataSource(ds);
+        console.log('Default data source:', ds);
+      } catch (error) {
+        console.error('Error fetching default data source:', error);
+      }
+    };
+
+    fetchDefaultDataSource();
+  }, []);
+
   useEffect(() => {
     if (data && data.length > 0) {
       const flamegraphPanels = data.filter(item => Object.keys(item)[0] === 'flamegraph');
@@ -496,12 +512,13 @@ const processTarget = (target: any) => {
   let replacedTarget = replaceVariables(target);
 
   const addDefaultDatasource = (obj: any) => {
+    console.log( defaultDataSource.type,defaultDataSource.uid)
     if (!obj.hasOwnProperty('datasource')) {
       return {
         ...obj,
         datasource: {
-          type: "prometheus",
-          uid: "000000004"
+          type: defaultDataSource.type,
+          uid: defaultDataSource.uid
         }
       };
     }
