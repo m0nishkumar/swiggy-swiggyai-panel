@@ -119,6 +119,7 @@ const getStyles = (theme: any) => {
     max-height: 200px;
     overflow-y: auto;
   `,
+  
   multiSelectOption: css`
     padding: 8px;
     cursor: pointer;
@@ -235,7 +236,7 @@ Summary and Recommendations:
 Summarize the key findings from your analysis
 Provide actionable insights based on the data
 Suggest areas for further analysis or data collection
-Please provide your analysis in a clear, structured format, using appropriate statistical terminology and visualization suggestions where relevant.`
+Please provide your analysis in a clear, structured format, using appropriate statistical terminology and visualization suggestions where relevant.If you are able to see any spikes give their timing and spike value`
   };
 
 
@@ -379,7 +380,6 @@ Please provide your analysis in a clear, structured format, using appropriate st
   }
 
   const screenShotMode = async (ress) => {
-    console.log(ress)
     try {
       ress.map(item => {
         console.log(item)
@@ -818,7 +818,8 @@ const iteratePanels = async (dashboardObj, value) => {
             <div className={styles.column}>
             <h5>AI Suggestions:</h5>
               <div className={styles.outputText}>
-                <ReactMarkdown>{analysisText}</ReactMarkdown>
+                {/* <ReactMarkdown>{analysisText}</ReactMarkdown> */}
+                <pre>{`${analysisText}`}</pre>
               </div>
             </div>
             <div className={styles.column}>
