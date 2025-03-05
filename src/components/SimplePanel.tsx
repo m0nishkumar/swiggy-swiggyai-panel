@@ -493,7 +493,24 @@ const processTarget = (target: any) => {
     return value;
   };
 
-  const replacedTarget = replaceVariables(target);
+  let replacedTarget = replaceVariables(target);
+
+  const addDefaultDatasource = (obj: any) => {
+    if (!obj.hasOwnProperty('datasource')) {
+      return {
+        ...obj,
+        datasource: {
+          type: "prometheus",
+          uid: "000000004"
+        }
+      };
+    }
+    return obj;
+  };
+
+  const replacedTargets = addDefaultDatasource(replacedTarget);
+
+
 
   // Ensure datasource is handled correctly
   // replacedTarget.datasource = {
@@ -503,7 +520,7 @@ const processTarget = (target: any) => {
   //     : replacedTarget.datasource.uid
   // };
 
-  return replacedTarget;
+  return replacedTargets;
 };
 
     // if (panel.datasource.type== "grafana-pyroscope-datasource" ) {
