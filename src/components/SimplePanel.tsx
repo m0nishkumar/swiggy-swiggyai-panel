@@ -509,8 +509,7 @@ const processTarget = (target: any) => {
   };
 
   const replacedTargets = addDefaultDatasource(replacedTarget);
-
-
+  console.log("replacedTarget",replacedTargets);
 
   // Ensure datasource is handled correctly
   // replacedTarget.datasource = {
