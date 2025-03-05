@@ -143,7 +143,7 @@ export const SimplePanel: React.FC<Props> = ({ options,width, height }) => {
 
 
     const date = new Date(1740556244910);
-    console.log(date.toLocaleString());
+    // console.log(date.toLocaleString());
     const fetchDashboardData = async () => {
       try {
         const dashboardUid = window.location.pathname.split('/')[2];
@@ -530,10 +530,10 @@ const processTarget = (target: any) => {
       from: `${twentyFourHoursAgo}`,
       to: `${now}`
     };
-    console.log("query",data);
-    console.log("grafana api-key",options.GrafanaApiKey);
+    // console.log("query",data);
+    // console.log("grafana api-key",options.GrafanaApiKey);
     const parsedUrl = new URL(window.location.href);
-    console.log(`${parsedUrl.protocol}//${parsedUrl.host}/`)
+    // console.log(`${parsedUrl.protocol}//${parsedUrl.host}/`)
     const config = {
       method: 'post',
       url: `${parsedUrl.protocol}//${parsedUrl.host}/api/ds/query`, 
@@ -548,8 +548,8 @@ const processTarget = (target: any) => {
       const response = await axios(config);
       // console.log(JSON.stringify(response.data, null, 2))
       setOutputText(JSON.stringify(response.data, null, 2));
-      console.log("response",response.data);
-      console.log(JSON.stringify(response.data, null, 2));
+      // console.log("response",response.data);
+      // console.log(JSON.stringify(response.data, null, 2));
       return {[panel.type]:response.data,"panel-name":panel.title,"type":panel.type}
     } catch (error) {
       console.error(error);

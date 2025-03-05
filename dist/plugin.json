@@ -17,12 +17,12 @@
         },
         "links": [],
         "screenshots": [],
-        "version": "1.0.0",
-        "updated": "2025-03-05"
+        "version": "%VERSION%",
+        "updated": "%TODAY%"
     },
     "dependencies": {
         "grafanaDependency": ">=10.4.0",
         "plugins": []
     },
-    "buildMode": "production"
+    "buildMode": "development"
 }
