@@ -3,7 +3,7 @@ import { PanelProps } from '@grafana/data';
 import { SimpleOptions } from 'types';
 import { css, cx } from '@emotion/css';
 import { useStyles2, Button, LoadingPlaceholder, Alert, Select, Icon,Checkbox, TimeSeries } from '@grafana/ui';
-import { getDataSourceSrv, getBackendSrv,getPanelDataSourceRef,PanelRenderer } from '@grafana/runtime';
+import { getDataSourceSrv, getBackendSrv } from '@grafana/runtime';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { getTemplateSrv } from '@grafana/runtime';
@@ -138,12 +138,9 @@ panelGroupHeader: css`
   };
 };
 
-export const SimplePanel: React.FC<Props> = ({ options,width, height }) => {
+export const SimplePanel: React.FC<Props> = ({ options,width, height ,timeRange}) => {
+
   useEffect(() => {
-
-
-    const date = new Date(1740556244910);
-    // console.log(date.toLocaleString());
     const fetchDashboardData = async () => {
       try {
         const dashboardUid = window.location.pathname.split('/')[2];
@@ -263,11 +260,11 @@ Please provide your analysis in a clear, structured format, using appropriate st
   const [showPanelsOptions, setShowPanelsOptions] = useState<{ label: string; value: string }[]>([]);
   const [selectedPanel, setSelectedPanel] = useState<string | null>(null);
   const [defaultDataSource, setDefaultDataSource] = useState<any>(null);
-  const [templateVars, setTemplateVars] = useState({
-    datasource: '',
-    job: '',
-    node: ''
-  });
+  // const [templateVars, setTemplateVars] = useState({
+  //   datasource: '',
+  //   job: '',
+  //   node: ''
+  // });
 
   // const updateTemplateVars = useCallback(() => {
   //   const templateSrv = getTemplateSrv();
@@ -319,7 +316,8 @@ Please provide your analysis in a clear, structured format, using appropriate st
 
   useEffect(() => {
     if (data && data.length > 0) {
-      const flamegraphPanels = data.filter(item => Object.keys(item)[0] === 'flamegraph');
+      console.log("what is this",data)
+      const flamegraphPanels = data.filter(item => item.type === 'flamegraph');
       if (flamegraphPanels.length > 0) {
         setSelectedPanel(flamegraphPanels[0]['panel-name']);
       }
@@ -356,6 +354,7 @@ Please provide your analysis in a clear, structured format, using appropriate st
     }
   
     const results = jsonData.data.results;
+    
     const keys = Object.keys(results);
   
     keys.forEach(key => {
@@ -377,7 +376,7 @@ Please provide your analysis in a clear, structured format, using appropriate st
         const date = new Date(timestamp);
         return {
           time: date.toLocaleString(),
-          value: dataValues[index]*100 
+          value: dataValues[index]
         };
       });
   
@@ -438,11 +437,11 @@ Please provide your analysis in a clear, structured format, using appropriate st
       ress.map(item => {
         console.log(item)
         if (item['type'] == 'flamegraph') {
-          console.log(item.flamegraph);
-          item.flamegraph = processProfileData(item.flamegraph);
+          item.data = processProfileData(item.data);
         }
         else{
-          getLocalTimeAndValues(item)
+          
+        getLocalTimeAndValues(item)
         }
       })
 
@@ -536,11 +535,27 @@ Please provide your analysis in a clear, structured format, using appropriate st
 
 const processTarget = (target: any) => {
   const templateSrv = getTemplateSrv();
-
+  console.log(target)
   const replaceVariables = (value: any): any => {
     if (typeof value === 'string') {
-      console.log(value,templateSrv.replace(value, null, 'csv'));
-      return templateSrv.replace(value, null, 'csv');
+      // Find all variable placeholders in the string (both $var and ${var} formats)
+      const variablePlaceholders = value.match(/\$(?:\w+|\{[^}]+\})/g) || [];
+  
+      // Replace each variable placeholder
+      let replacedValue = value;
+      for (const placeholder of variablePlaceholders) {
+        const originalPart = placeholder;
+        const replacedPart = templateSrv.replace(placeholder, null, 'csv');
+        
+        // Replace commas with vertical bars only in the replaced part
+        const modifiedReplacedPart = replacedPart.replace(/,/g, '|');
+        
+        // Replace the original part with the modified replaced part
+        replacedValue = replacedValue.replace(originalPart, modifiedReplacedPart);
+      }
+      
+      console.log(value, replacedValue);
+      return replacedValue;
     }
     if (typeof value === 'object' && value !== null) {
       const result = Array.isArray(value) ? [] : {};
@@ -600,11 +615,13 @@ const processTarget = (target: any) => {
         };
       });
     // }
+    const fromTime = timeRange.from.valueOf();
+    const toTime = timeRange.to.valueOf();
 
     const data = {
       queries: queries,
-      from: `${twentyFourHoursAgo}`,
-      to: `${now}`
+      from: `${fromTime}`,
+      to: `${toTime}`
     };
     // console.log("query",data);
     // console.log("grafana api-key",options.GrafanaApiKey);
@@ -797,7 +814,7 @@ const iteratePanels = async (dashboardObj, value) => {
       return <Alert title="Panel data not found" severity="error">Unable to find data for the selected panel.</Alert>;
     }
   
-    const flamegraphData = selectedPanelData['flamegraph'];
+    const flamegraphData = selectedPanelData['data'];
     
     let profileData;
     // console.log(flamegraphData);
