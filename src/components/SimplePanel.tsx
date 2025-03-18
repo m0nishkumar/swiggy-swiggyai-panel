@@ -626,14 +626,21 @@ const processTarget = (target: any) => {
   let replacedTarget = replaceVariables(target);
 
   const addDefaultDatasource = (obj: any) => {
-    console.log( defaultDataSource.type,defaultDataSource.uid)
+    console.log( defaultDataSource.type,defaultDataSource.uid,datasourceVariable)
     if (!obj.hasOwnProperty('datasource')) {
-      return {
-        ...obj,
-        datasource: {
+      let datasource = null;
+      if(datasourceVariable){
+        datasource = {type:datasourceVariable.current.text , uid:datasourceVariable.current.value}
+      }
+      else{
+        datasource = {
           type: defaultDataSource.type,
           uid: defaultDataSource.uid
         }
+      }
+      return {
+        ...obj,
+        datasource
       };
     }
     return obj;
