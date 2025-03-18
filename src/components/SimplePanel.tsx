@@ -587,7 +587,7 @@ const processTarget = (target: any) => {
   const datasourceVariable = variables.find(variable => variable.name === 'datasource');
 
   if (datasourceVariable) {
-    console.log(datasourceVariable.current);
+    console.log(datasourceVariable);
   } else {
     console.log('Datasource variable not found');
   }
