@@ -591,7 +591,7 @@ const processTarget = (target: any) => {
   } else {
     console.log('Datasource variable not found');
   }
-  console.log(target)
+  console.log("hiii from",target)
   const replaceVariables = (value: any): any => {
     if (typeof value === 'string') {
       // Find all variable placeholders in the string (both $var and ${var} formats)
