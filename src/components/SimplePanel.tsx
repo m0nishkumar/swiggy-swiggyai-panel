@@ -347,6 +347,43 @@ Please provide your analysis in a clear, structured format, using appropriate st
     }).join('\n');
   }
 
+  // const getLocalTimeAndValues = (jsonData: any) => {
+  //   if (!jsonData.data || !jsonData.data.results) {
+  //     console.error("Invalid JSON structure");
+  //     return;
+  //   }
+  
+  //   const results = jsonData.data.results;
+    
+  //   const keys = Object.keys(results);
+  
+  //   keys.forEach(key => {
+  //     const frames = results[key].frames;
+  //     if (!frames || frames.length === 0 || !frames[0].data || !frames[0].data.values) {
+  //       console.error(`Invalid data structure for key: ${key}`);
+  //       return;
+  //     }
+  
+  //     const timeValues = frames[0].data.values[0];
+  //     const dataValues = frames[0].data.values[1];
+  
+  //     if (!Array.isArray(timeValues) || !Array.isArray(dataValues) || timeValues.length !== dataValues.length) {
+  //       console.error(`Mismatched or invalid data for key: ${key}`);
+  //       return;
+  //     }
+  
+  //     const resultss = timeValues.map((timestamp, index) => {
+  //       const date = new Date(timestamp);
+  //       return {
+  //         time: date.toLocaleString(),
+  //         value: dataValues[index]
+  //       };
+  //     });
+  
+  //     console.log(`Results for ${key}:`, resultss);
+  //     frames[0].data.values = resultss;
+  //   });
+  // };
   const getLocalTimeAndValues = (jsonData: any) => {
     if (!jsonData.data || !jsonData.data.results) {
       console.error("Invalid JSON structure");
@@ -354,7 +391,7 @@ Please provide your analysis in a clear, structured format, using appropriate st
     }
   
     const results = jsonData.data.results;
-    
+  
     const keys = Object.keys(results);
   
     keys.forEach(key => {
@@ -364,26 +401,35 @@ Please provide your analysis in a clear, structured format, using appropriate st
         return;
       }
   
-      const timeValues = frames[0].data.values[0];
-      const dataValues = frames[0].data.values[1];
+      // Iterate through all frames
+      frames.forEach((frame, frameIndex) => {
+        if (!frame.data || !frame.data.values) {
+          console.error(`Invalid data structure for frame at index: ${frameIndex} for key: ${key}`);
+          return;
+        }
   
-      if (!Array.isArray(timeValues) || !Array.isArray(dataValues) || timeValues.length !== dataValues.length) {
-        console.error(`Mismatched or invalid data for key: ${key}`);
-        return;
-      }
+        const timeValues = frame.data.values[0];
+        const dataValues = frame.data.values[1];
   
-      const resultss = timeValues.map((timestamp, index) => {
-        const date = new Date(timestamp);
-        return {
-          time: date.toLocaleString(),
-          value: dataValues[index]
-        };
+        if (!Array.isArray(timeValues) || !Array.isArray(dataValues) || timeValues.length !== dataValues.length) {
+          console.error(`Mismatched or invalid data for frame at index: ${frameIndex} for key: ${key}`);
+          return;
+        }
+  
+        const resultss = timeValues.map((timestamp, index) => {
+          const date = new Date(timestamp);
+          return {
+            time: date.toLocaleString(),
+            value: dataValues[index]
+          };
+        });
+  
+        console.log(`Results for ${key}, frame index ${frameIndex}:`, resultss);
+        frame.data.values = resultss; // Update the frame's values with the processed results
       });
-  
-      console.log(`Results for ${key}:`, resultss);
-      frames[0].data.values = resultss;
     });
   };
+  
 
   function processProfileData(jsonInput) {
     try {
