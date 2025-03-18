@@ -581,6 +581,16 @@ Please provide your analysis in a clear, structured format, using appropriate st
 
 const processTarget = (target: any) => {
   const templateSrv = getTemplateSrv();
+  const variables = templateSrv.getVariables();
+
+  // Find the specific variable (in this case, 'datasource')
+  const datasourceVariable = variables.find(variable => variable.name === 'datasource');
+
+  if (datasourceVariable) {
+    console.log(datasourceVariable.current);
+  } else {
+    console.log('Datasource variable not found');
+  }
   console.log(target)
   const replaceVariables = (value: any): any => {
     if (typeof value === 'string') {
