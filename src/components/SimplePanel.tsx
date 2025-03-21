@@ -149,7 +149,7 @@ export const SimplePanel: React.FC<Props> = ({ options,width, height ,timeRange}
         console.log('📌 Dashboard UID:', dashboardUid);
 
         const dashboard = await getBackendSrv().get(`/api/dashboards/uid/${dashboardUid}`);
-        console.log('📌 Dashboard data:', dashboard);
+        console.log('📌 Dashboard-data:', dashboard);
 
         await iteratePanels(dashboard, false);
       } catch (error) {
