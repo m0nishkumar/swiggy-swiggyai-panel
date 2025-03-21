@@ -662,6 +662,13 @@ const processTarget = (target: any) => {
   return replacedTargets;
 };
 
+const updateLabelSelector = (data) => {
+  if (data.labelSelector === '') {
+    data.labelSelector = '{}';
+  }
+  return data;
+};
+
     // if (panel.datasource.type== "grafana-pyroscope-datasource" ) {
     //   queries = panel.targets.map(target => ({
     //     ...target,
@@ -671,7 +678,7 @@ const processTarget = (target: any) => {
     // } 
     // else if(panel.datasource.type== "prometheus"){
       queries = panel.targets.map(target => {
-        const replacedTarget = processTarget(target);
+        const replacedTarget = processTarget(updateLabelSelector(target));
       
         return {
           ...replacedTarget,
