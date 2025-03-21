@@ -468,7 +468,7 @@ Please provide your analysis in a clear, structured format, using appropriate st
   
       result.sort((a, b) => b.totalTime - a.totalTime);
   
-      console.log("Processed profile data:", result.slice(0, 300));
+      console.log("Processed profil:", result.slice(0, 300));
       // setProfileData(result);
       return JSON.stringify(result.slice(0, 300), null, 2);
     } catch (error) {
