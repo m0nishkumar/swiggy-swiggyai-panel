@@ -179,7 +179,7 @@ export const SimplePanel: React.FC<Props> = ({ options,width, height ,timeRange}
   
     CapacityPlanning: `Examine the JSON data with a focus on metrics relevant to capacity planning. Based on current usage patterns and growth trends evident in the data, provide insights for future capacity needs. Start with "For effective capacity planning, the data suggests..." and offer recommendations on scaling resources, identifying potential future bottlenecks, and suggesting proactive measures to ensure the system can handle anticipated growth.`,
 
-    FlameGraph: `Analyze this flamegraph from a [service type] application using [language/framework] and provide a detailed performance assessment:
+    FlameGraph: `Analyze this flamegraph from a application and provide a detailed performance assessment, the data containers function-name,its self-time and its total-time in mins:
 
 Overview: Summarize the overall performance profile, identifying the most time-consuming functions and their impact on performance.
 Hot Path: Describe the main execution path contributing to high CPU usage, explaining the purpose of key functions in this path.
@@ -461,16 +461,16 @@ Please provide your analysis in a clear, structured format, using appropriate st
       }
       
       const result = Object.entries(functionData).map(([functionName, data]) => ({
-        functionName,
-        selfTime: Number((data.selfTime / 60e9).toFixed(4)),
-        totalTime: Number((data.totalTime / 60e9).toFixed(4))
+        function:functionName,
+        self: Number((data.selfTime / 60e9).toFixed(4)),
+        total: Number((data.totalTime / 60e9).toFixed(4))
       }));
   
       result.sort((a, b) => b.totalTime - a.totalTime);
   
-      console.log("Processed profile data:", result);
+      console.log("Processed profile data:", result.slice(0, 3));
       // setProfileData(result);
-      return JSON.stringify(result, null, 2);
+      return JSON.stringify(result.slice(0, 500), null, 2);
     } catch (error) {
       console.error('Error processing profile data:', error);
       setProfileData([]);
@@ -906,9 +906,9 @@ const iteratePanels = async (dashboardObj, value) => {
         <tbody>
           {profileData.map((row, index) => (
             <tr key={index}>
-              <td>{row.functionName}</td>
-              <td>{row.selfTime}</td>
-              <td>{row.totalTime}</td>
+              <td>{row.function}</td>
+              <td>{row.self}</td>
+              <td>{row.total}</td>
               <td>
                 <Button size="sm" onClick={() => handleOptimize(row.functionName)}>
                   Optimize
