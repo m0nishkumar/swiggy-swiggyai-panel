@@ -260,6 +260,7 @@ Please provide your analysis in a clear, structured format, using appropriate st
   const [showPanelsOptions, setShowPanelsOptions] = useState<{ label: string; value: string }[]>([]);
   const [selectedPanel, setSelectedPanel] = useState<string | null>(null);
   const [defaultDataSource, setDefaultDataSource] = useState<any>(null);
+  const [showHiddenButton, setShowHiddenButton] = useState(false);
   // const [templateVars, setTemplateVars] = useState({
   //   datasource: '',
   //   job: '',
@@ -323,6 +324,40 @@ Please provide your analysis in a clear, structured format, using appropriate st
       }
     }
   }, [data]);
+
+  const uploadMetricsData = async () => {
+
+    try {
+      console.log(data[0].data.results)
+      
+      const response = await axios.post(
+        'http://localhost:5001/process_metrics',
+        {
+          forecastPeriods: 60,
+          results: data[0].data.results
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      console.log('Forecast data uploaded successfully:', response.data);
+      window.location.href="http://127.0.0.1:5001/metrics"
+      makeButtonDisappear();
+    } catch (err) {
+      console.error('Error uploading metrics data:', err);
+    } 
+  };
+
+  const makeButtonAppear = () => {
+    setShowHiddenButton(true);
+  };
+
+  const makeButtonDisappear = () => {
+    setShowHiddenButton(false);
+  };
 
   function formatDataForLLM(data) {
     return data.map((item, index) => {
@@ -466,12 +501,12 @@ Please provide your analysis in a clear, structured format, using appropriate st
         total: Number((data.totalTime / 60e9).toFixed(4))
       }));
   
-      result.sort((a, b) => b.totalTime - a.totalTime);
-      console.log("changes are doneee")
+      result.sort((a, b) => b.total - a.total);
   
-      console.log("Processed profile:", result.slice(0, 200));
+      // console.log("Processed profile:", result.slice(0, 200));
+      console.log("done done done")
       // setProfileData(result);
-      return JSON.stringify(result.slice(0, 200), null, 2);
+      return JSON.stringify(result, null, 2);
     } catch (error) {
       console.error('Error processing profile data:', error);
       setProfileData([]);
@@ -530,6 +565,7 @@ Please provide your analysis in a clear, structured format, using appropriate st
       setAnalysisText('An error occurred while processing your request.');
     } finally {
       setButtonText('Analyse');
+      makeButtonAppear();
       setButtonEnabled(true);
       setIsLoading(false);
     }
@@ -592,7 +628,7 @@ const processTarget = (target: any) => {
   } else {
     console.log('Datasource variable not found');
   }
-  console.log("hiii from",target)
+
   const replaceVariables = (value: any): any => {
     if (typeof value === 'string') {
       // Find all variable placeholders in the string (both $var and ${var} formats)
@@ -971,6 +1007,8 @@ const iteratePanels = async (dashboardObj, value) => {
           <Button onClick={fetchData} disabled={!buttonEnabled || isLoading} icon="play">
             {buttonText}
           </Button>
+
+          {showHiddenButton && (<Button onClick={uploadMetricsData}>Forcast</Button>)}
         </div>
       </div>
       <div className={styles.contentWrapper}>
